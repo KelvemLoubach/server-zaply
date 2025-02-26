@@ -26,7 +26,7 @@ export const receiveMessage = async (req: Request, res: Response) => {
         console.log('Mensagem recebida:', { message, number });
 
         // Chamar a função de resposta separada
-        const response = await sendMessageResponse("Isso é um teste de resposta.", '5533999493748');
+        const response = await sendMessageResponse(message, '5533999493748');
 
         // Retornar resposta adequada
         const statusCode = response.success ? StatusCodes.OK : StatusCodes.INTERNAL_SERVER_ERROR;
