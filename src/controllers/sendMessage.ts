@@ -17,9 +17,9 @@ export const sendMessageResponse = async (deepseekResponde:string, number:string
         headers.append("Authorization", `Bearer ${ZAPLY_AUTH_TOKEN}`);
         headers.append("Content-Type", "application/json");
 
+        let numberPart = number.split('@')[0];
 
-
-        const raw = JSON.stringify({ deepseekResponde, number });
+        const raw = JSON.stringify({ deepseekResponde, numberPart });
 
         const requestOptions = {
             method: 'POST' as const,
