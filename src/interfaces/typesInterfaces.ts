@@ -18,3 +18,18 @@ export interface ApiResponse {
     error?: string;
 }
 
+
+  export interface Conversation {
+    number: string;
+    type: string;
+    url_image?: string;
+    contente: { role: "user" | "assistant"; content: string }[];
+  }
+
+  export interface dataFromZaply {
+    number: string;
+    type: string;
+    url_image?: string;
+    message: string;    
+    
+  }

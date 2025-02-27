@@ -1,6 +1,7 @@
 
 import fetch, { Headers, Response as FetchResponse } from 'node-fetch';
 import { ApiResponse, MessageRequest, ZaplyMessageRequest } from '../interfaces/typesInterfaces';
+import {openai} from '../config/configDeep';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -10,13 +11,15 @@ const ZAPLY_AUTH_TOKEN = process.env.ZAPLY_AUTH_TOKEN || 'your_token_here';
 const INSTANCE_ID = process.env.INSTANCE_ID || 'your_instance_id_here';
 
 // Função separada para enviar resposta
-export const sendMessageResponse = async (message: string, number: string): Promise<ApiResponse> => {
+export const sendMessageResponse = async (deepseekResponde:string, number:string): Promise<ApiResponse> => {
     try {
         const headers = new Headers();
         headers.append("Authorization", `Bearer ${ZAPLY_AUTH_TOKEN}`);
         headers.append("Content-Type", "application/json");
 
-        const raw = JSON.stringify({ message, number });
+
+
+        const raw = JSON.stringify({ deepseekResponde, number });
 
         const requestOptions = {
             method: 'POST' as const,

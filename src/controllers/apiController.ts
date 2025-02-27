@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import {sendMessageResponse} from '../controllers/sendMessage'
-import {ApiResponse,MessageRequest,ZaplyMessageRequest} from '../interfaces/typesInterfaces'
+import {chat} from '../services/chatDeepSeeak';
+import {ApiResponse,Conversation,MessageRequest,ZaplyMessageRequest} from '../interfaces/typesInterfaces'
 import dotenv from 'dotenv';
 
 const env = dotenv.config();
@@ -11,11 +12,15 @@ export const receiveMessage = async (req: Request, res: Response) => {
     
     try {
         // Validação do corpo da requisição
+
+        const filterTeste: string = '13135550002@c.us'; 
+        const from:string = req.body.data.from;
+    
         const message = req.body.data.body;
         const number = req.body.data.from;
-        console.log(req.body)
+        console.log(req.body.data)
         
-        if (!message || !number) {
+        if (!(from == filterTeste)) {
             return res.status(StatusCodes.BAD_REQUEST).json({
                 success: false,
                 error: 'Obrigatório número e mensagem.'
@@ -25,12 +30,16 @@ export const receiveMessage = async (req: Request, res: Response) => {
         // Processar a mensagem recebida
         console.log('Mensagem recebida:', { message, number });
 
-        // Chamar a função de resposta separada
-        const response = await sendMessageResponse(message, '5533999493748');
+        const dataFromWhats:Conversation = {
+            number: number,
+            type: 'whatsapp',
+            url_image: '',
+            contente: [{ role: 'user', content: message }]  
+        }
 
-        // Retornar resposta adequada
-        const statusCode = response.success ? StatusCodes.OK : StatusCodes.INTERNAL_SERVER_ERROR;
-        res.status(statusCode).json(response);
+        await chat(dataFromWhats)
+
+      
 
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
