@@ -20,10 +20,10 @@ export const receiveMessage = async (req: Request, res: Response) => {
         const number = req.body.data.from;
         console.log(req.body.data)
         
-        if (!(from == filterTeste)) {
+        if (from !== filterTeste) {
             return res.status(StatusCodes.BAD_REQUEST).json({
                 success: false,
-                error: 'Obrigatório número e mensagem.'
+                error: 'Não é permitido esse número.'
             } as ApiResponse);
         }
 
