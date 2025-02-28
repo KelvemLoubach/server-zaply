@@ -36,10 +36,7 @@ export const receiveMessage = async (req: Request, res: Response) => {
         }
 
         await saveMessage(dataFromWhats.number, dataFromWhats.contente[0].role, dataFromWhats.contente[0].content);
-        await sendMessageResponse(message, '5533999493748');
-
-      
-
+        
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
