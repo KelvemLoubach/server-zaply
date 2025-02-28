@@ -33,7 +33,7 @@ export const saveMessage = async (number: string, role: "user" | "assistant", co
     .select('content')
     .eq('user_id', number) // Usamos o `number` como chave estrangeira
     .order('created_at', { ascending: false })
-    .limit(1)
+    .limit(10)
     .single();
 
   if (messageError && messageError.code !== 'PGRST116') {
@@ -45,12 +45,15 @@ export const saveMessage = async (number: string, role: "user" | "assistant", co
 
   // Se já houver mensagens anteriores, adicionamos ao array existente
   if (existingMessage && existingMessage.content) {
-    updatedContent = [...existingMessage.content, { role: 'user', content }];
-    const responseDeep = await getDeepseekResponse(updatedContent, content);
-    updatedContent = [...updatedContent, { role: 'assistant', content: responseDeep }];
-    await sendMessageResponse(responseDeep, '5528998844998');
-    console.log("Conversation History (JSON):", JSON.stringify(updatedContent, null, 2));
+    updatedContent = [...existingMessage.content, { role: 'user', content }];  
   }
+
+  const responseDeep = await getDeepseekResponse(updatedContent, content);
+  updatedContent = [...updatedContent, { role: 'assistant', content: responseDeep }];
+
+  await sendMessageResponse(responseDeep, number);
+  
+  console.log("Conversation History (JSON):", JSON.stringify(updatedContent, null, 2));
 
   // Passo 4: Insere ou atualiza a conversa na tabela `messages`
   if (existingMessage) {

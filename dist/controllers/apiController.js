@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.receiveMessage = void 0;
 const http_status_codes_1 = require("http-status-codes");
 const saveSupabase_1 = require("../services/saveSupabase");
-const sendMessage_1 = require("../controllers/sendMessage");
 const dotenv_1 = __importDefault(require("dotenv"));
 const env = dotenv_1.default.config();
 const receiveMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -25,7 +24,6 @@ const receiveMessage = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const from = req.body.data.from;
         const message = req.body.data.body;
         const number = req.body.data.from;
-        console.log(req.body.data);
         if (from !== filterTeste) {
             return res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({
                 success: false,
@@ -33,13 +31,11 @@ const receiveMessage = (req, res) => __awaiter(void 0, void 0, void 0, function*
             });
         }
         // Processar a mensagem recebida
-        console.log('Mensagem recebida:', { message, number });
         const dataFromWhats = {
             number: number,
             contente: [{ role: 'user', content: message }]
         };
         yield (0, saveSupabase_1.saveMessage)(dataFromWhats.number, dataFromWhats.contente[0].role, dataFromWhats.contente[0].content);
-        yield (0, sendMessage_1.sendMessageResponse)(message, '5533999493748');
     }
     catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';

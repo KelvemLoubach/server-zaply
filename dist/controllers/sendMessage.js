@@ -50,8 +50,8 @@ const node_fetch_1 = __importStar(require("node-fetch"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 // Configurações
-const ZAPLY_AUTH_TOKEN = process.env.ZAPLY_AUTH_TOKEN || 'your_token_here';
-const INSTANCE_ID = process.env.INSTANCE_ID || 'your_instance_id_here';
+const ZAPLY_AUTH_TOKEN = process.env.ZAPLY_AUTH_TOKEN;
+const INSTANCE_ID = process.env.INSTANCE_ID;
 // Função para enviar resposta pelo Zaply
 const sendMessageResponse = (deepseekResponse, number) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -60,10 +60,10 @@ const sendMessageResponse = (deepseekResponse, number) => __awaiter(void 0, void
         headers.append("Content-Type", "application/json");
         // Extraindo o número corretamente (caso venha no formato WhatsApp com @)
         let numberPart = number.split('@')[0];
-        // Formata o número para garantir que está correto (adicione código do país se necessário)
-        if (!numberPart.startsWith('+')) {
-            numberPart = `+${numberPart}`;
-        }
+        // // Formata o número para garantir que está correto (adicione código do país se necessário)
+        // if (!numberPart.startsWith('+')) {
+        //     numberPart = `+${numberPart}`;
+        // }
         // Corpo da requisição conforme a documentação
         const raw = JSON.stringify({
             message: deepseekResponse,

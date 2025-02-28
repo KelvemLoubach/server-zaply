@@ -11,6 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.saveMessage = void 0;
 const configSupabase_1 = require("../config/configSupabase");
+const chatDeepSeeak_1 = require("./chatDeepSeeak");
+const sendMessage_1 = require("../controllers/sendMessage");
 const saveMessage = (number, role, content) => __awaiter(void 0, void 0, void 0, function* () {
     // Passo 1: Verifica se o usuário já existe
     const { data: existingUser, error: userError } = yield configSupabase_1.supabase
@@ -38,7 +40,7 @@ const saveMessage = (number, role, content) => __awaiter(void 0, void 0, void 0,
         .select('content')
         .eq('user_id', number) // Usamos o `number` como chave estrangeira
         .order('created_at', { ascending: false })
-        .limit(1)
+        .limit(10)
         .single();
     if (messageError && messageError.code !== 'PGRST116') {
         console.error('Erro ao buscar mensagens existentes:', messageError);
@@ -47,8 +49,12 @@ const saveMessage = (number, role, content) => __awaiter(void 0, void 0, void 0,
     let updatedContent = [{ role, content }];
     // Se já houver mensagens anteriores, adicionamos ao array existente
     if (existingMessage && existingMessage.content) {
-        updatedContent = [...existingMessage.content, { role, content }];
+        updatedContent = [...existingMessage.content, { role: 'user', content }];
     }
+    const responseDeep = yield (0, chatDeepSeeak_1.getDeepseekResponse)(updatedContent, content);
+    updatedContent = [...updatedContent, { role: 'assistant', content: responseDeep }];
+    yield (0, sendMessage_1.sendMessageResponse)(responseDeep, number);
+    console.log("Conversation History (JSON):", JSON.stringify(updatedContent, null, 2));
     // Passo 4: Insere ou atualiza a conversa na tabela `messages`
     if (existingMessage) {
         // Atualiza a mensagem existente adicionando o novo conteúdo ao JSONB
