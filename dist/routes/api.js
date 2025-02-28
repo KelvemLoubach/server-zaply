@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const apiController_1 = require("../controllers/apiController");
+const authWebhook_1 = require("../middlewares/authWebhook");
+const towakeup_1 = require("../controllers/towakeup");
+const router = (0, express_1.Router)();
+router.post("/receiveMessage", authWebhook_1.validateWebhookToken, apiController_1.receiveMessage);
+router.get("/healthCheck", towakeup_1.healthCheck);
+exports.default = router;
