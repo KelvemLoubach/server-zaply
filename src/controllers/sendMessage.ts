@@ -17,10 +17,10 @@ export const sendMessageResponse = async (deepseekResponse: string, number: stri
         // Extraindo o número corretamente (caso venha no formato WhatsApp com @)
         let numberPart = number.split('@')[0];
 
-        // Formata o número para garantir que está correto (adicione código do país se necessário)
-        if (!numberPart.startsWith('+')) {
-            numberPart = `+${numberPart}`;
-        }
+        // // Formata o número para garantir que está correto (adicione código do país se necessário)
+        // if (!numberPart.startsWith('+')) {
+        //     numberPart = `+${numberPart}`;
+        // }
 
         // Corpo da requisição conforme a documentação
         const raw = JSON.stringify({
