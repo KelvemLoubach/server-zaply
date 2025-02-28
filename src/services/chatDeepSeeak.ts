@@ -6,7 +6,7 @@ dotenv.config();
 export const getDeepseekResponse = async (history: any[], userMessage: string) => {
   try {
     const messages = [
-      { role: "system", content: "Responda com duas palavras" }, // Sempre no início
+      { role: "system", content: "Responda como um humano, direto e conciso, de modo não muito formal, com frases curtas." }, // Sempre no início
       ...history, // Histórico das últimas mensagens
       { role: "user", content: userMessage } // Mensagem atual do usuário
     ];

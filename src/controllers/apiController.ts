@@ -13,7 +13,7 @@ export const receiveMessage = async (req: Request, res: Response) => {
     try {
         // Validação do corpo da requisição
 
-        const filterTeste: string = '13135550002@c.us'; 
+        const filterTeste: string = '5528998844998@c.us'; 
         const from:string = req.body.data.from;
     
         const message = req.body.data.body;
