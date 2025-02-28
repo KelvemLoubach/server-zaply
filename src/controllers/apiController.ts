@@ -18,8 +18,7 @@ export const receiveMessage = async (req: Request, res: Response) => {
     
         const message = req.body.data.body;
         const number = req.body.data.from;
-        console.log(req.body.data)
-        
+     
         if (from !== filterTeste) {
             return res.status(StatusCodes.BAD_REQUEST).json({
                 success: false,
@@ -28,7 +27,7 @@ export const receiveMessage = async (req: Request, res: Response) => {
         }
 
         // Processar a mensagem recebida
-        console.log('Mensagem recebida:', { message, number });
+      
 
         const dataFromWhats:Conversation = {
             number: number,

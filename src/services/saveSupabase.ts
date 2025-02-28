@@ -49,6 +49,7 @@ export const saveMessage = async (number: string, role: "user" | "assistant", co
     const responseDeep = await getDeepseekResponse(updatedContent, content);
     updatedContent = [...updatedContent, { role: 'assistant', content: responseDeep }];
     await sendMessageResponse(responseDeep, '5528998844998');
+    console.log("Conversation History (JSON):", JSON.stringify(updatedContent, null, 2));
   }
 
   // Passo 4: Insere ou atualiza a conversa na tabela `messages`
