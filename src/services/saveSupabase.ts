@@ -48,7 +48,7 @@ export const saveMessage = async (number: string, role: "user" | "assistant", co
     updatedContent = [...existingMessage.content, { role: 'user', content }];
     const responseDeep = await getDeepseekResponse(updatedContent, content);
     updatedContent = [...updatedContent, { role: 'assistant', content: responseDeep }];
-    await sendMessageResponse(responseDeep, '5533999493748');
+    await sendMessageResponse(responseDeep, '5528998844998');
   }
 
   // Passo 4: Insere ou atualiza a conversa na tabela `messages`
