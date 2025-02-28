@@ -1,5 +1,5 @@
 import {supabase} from '../config/configSupabase';
-
+import { getDeepseekResponse } from './chatDeepSeeak';
 
 export const saveMessage = async (number: string, role: "user" | "assistant", content: string) => {
   // Passo 1: Verifica se o usuário já existe
@@ -44,7 +44,9 @@ export const saveMessage = async (number: string, role: "user" | "assistant", co
 
   // Se já houver mensagens anteriores, adicionamos ao array existente
   if (existingMessage && existingMessage.content) {
-    updatedContent = [...existingMessage.content, { role, content }];
+    updatedContent = [...existingMessage.content, { role: 'user', content }];
+    const responseDeep = await getDeepseekResponse(updatedContent, content);
+    updatedContent = [...updatedContent, { role: 'assistant', content: responseDeep }];
   }
 
   // Passo 4: Insere ou atualiza a conversa na tabela `messages`
