@@ -1,7 +1,4 @@
-
 import fetch, { Headers, Response as FetchResponse } from 'node-fetch';
-import { ApiResponse, MessageRequest, ZaplyMessageRequest } from '../interfaces/typesInterfaces';
-import {openai} from '../config/configDeep';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -10,16 +7,28 @@ dotenv.config();
 const ZAPLY_AUTH_TOKEN = process.env.ZAPLY_AUTH_TOKEN || 'your_token_here';
 const INSTANCE_ID = process.env.INSTANCE_ID || 'your_instance_id_here';
 
-// Função separada para enviar resposta
-export const sendMessageResponse = async (deepseekResponde:string, number:string): Promise<ApiResponse> => {
+// Função para enviar resposta pelo Zaply
+export const sendMessageResponse = async (deepseekResponse: string, number: string): Promise<{ success: boolean; data?: any; error?: string }> => {
     try {
         const headers = new Headers();
         headers.append("Authorization", `Bearer ${ZAPLY_AUTH_TOKEN}`);
         headers.append("Content-Type", "application/json");
 
+        // Extraindo o número corretamente (caso venha no formato WhatsApp com @)
         let numberPart = number.split('@')[0];
 
-        const raw = JSON.stringify({ deepseekResponde, numberPart });
+        // Formata o número para garantir que está correto (adicione código do país se necessário)
+        if (!numberPart.startsWith('+')) {
+            numberPart = `+${numberPart}`;
+        }
+
+        // Corpo da requisição conforme a documentação
+        const raw = JSON.stringify({
+            message: deepseekResponse,
+            number: numberPart
+        });
+
+        console.log("Enviando payload para Zaply:", raw);
 
         const requestOptions = {
             method: 'POST' as const,
@@ -39,7 +48,7 @@ export const sendMessageResponse = async (deepseekResponde:string, number:string
         }
 
         const result = await response.json();
-        console.log(result)
+        console.log("Resposta da API Zaply:", result);
 
         return {
             success: true,
@@ -47,6 +56,7 @@ export const sendMessageResponse = async (deepseekResponde:string, number:string
         };
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+        console.error("Erro ao enviar mensagem:", errorMessage);
         return {
             success: false,
             error: errorMessage

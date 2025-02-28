@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import {saveMessage} from '../services/saveSupabase'
 import {sendMessageResponse} from '../controllers/sendMessage'
-import {chat} from '../services/chatDeepSeeak';
 import {ApiResponse,Conversation,MessageRequest,ZaplyMessageRequest} from '../interfaces/typesInterfaces'
 import dotenv from 'dotenv';
 
@@ -32,12 +32,11 @@ export const receiveMessage = async (req: Request, res: Response) => {
 
         const dataFromWhats:Conversation = {
             number: number,
-            type: 'whatsapp',
-            url_image: '',
             contente: [{ role: 'user', content: message }]  
         }
 
-        await chat(dataFromWhats)
+        await saveMessage(dataFromWhats.number, dataFromWhats.contente[0].role, dataFromWhats.contente[0].content);
+        await sendMessageResponse(message, '5533999493748');
 
       
 
