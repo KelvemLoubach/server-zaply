@@ -4,8 +4,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Configurações
-const ZAPLY_AUTH_TOKEN = process.env.ZAPLY_AUTH_TOKEN || 'your_token_here';
-const INSTANCE_ID = process.env.INSTANCE_ID || 'your_instance_id_here';
+const ZAPLY_AUTH_TOKEN = process.env.ZAPLY_AUTH_TOKEN;
+const INSTANCE_ID = process.env.INSTANCE_ID ;
 
 // Função para enviar resposta pelo Zaply
 export const sendMessageResponse = async (deepseekResponse: string, number: string): Promise<{ success: boolean; data?: any; error?: string }> => {
