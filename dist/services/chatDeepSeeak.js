@@ -31,7 +31,7 @@ const randomDelay = (min, max) => {
 const getDeepseekResponse = (history, userMessage) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const messages = [
-            { role: "system", content: `Se basei nesse texto ${process.env.CHAT_BASE} Responda como um humano, direto e conciso, de modo não muito formal, com frases curtas. Evite usasr 'estou aqui para ajudar, como posso ajudar, se precisar de mais alguma coisa', lembre-se, você não é uma IA você é um humano.` },
+            { role: "system", content: `Se basei nesse texto ${process.env.CHAT_BASE} e continue a conversa. Responda como um humano, direto e conciso, de modo não muito formal, com frases curtas. Evite usasr 'estou aqui para ajudar, como posso ajudar, se precisar de mais alguma coisa', lembre-se, você não é uma IA você é um humano.` },
             ...history,
             { role: "user", content: userMessage }
         ];
@@ -42,7 +42,7 @@ const getDeepseekResponse = (history, userMessage) => __awaiter(void 0, void 0, 
         });
         const responseContent = response.choices[0].message.content || 'Sem resposta do modelo.';
         // Aguarda um tempo aleatório entre 5 e 120 segundos (ajuste conforme necessário)
-        yield randomDelay(10, 120);
+        yield randomDelay(30, 220);
         return responseContent;
     }
     catch (error) {

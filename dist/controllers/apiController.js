@@ -20,28 +20,34 @@ const env = dotenv_1.default.config();
 const receiveMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Validação do corpo da requisição
-        const filterTeste = '13135550002@c.us';
+        // Array de números permitidos
+        const allowedNumbers = [
+            "5528998844998@c.us",
+            "13135550002@c.us"
+        ];
         const from = req.body.data.from;
         const message = req.body.data.body;
         const number = req.body.data.from;
-        if (from !== filterTeste) {
-            return res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({
+        // Verifica se o número está na lista de permitidos
+        if (!allowedNumbers.includes(from)) {
+            return res.status(http_status_codes_1.StatusCodes.FORBIDDEN).json({
                 success: false,
-                error: 'Não é permitido esse número.'
+                error: "Número não autorizado"
             });
         }
         // Processar a mensagem recebida
         const dataFromWhats = {
             number: number,
-            contente: [{ role: 'user', content: message }]
+            contente: [{ role: "user", content: message }],
         };
+        console.log(dataFromWhats);
         yield (0, saveSupabase_1.saveMessage)(dataFromWhats.number, dataFromWhats.contente[0].role, dataFromWhats.contente[0].content);
     }
     catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+        const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
         res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
             success: false,
-            error: errorMessage
+            error: errorMessage,
         });
     }
 });
