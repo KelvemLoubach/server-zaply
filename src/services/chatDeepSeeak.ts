@@ -18,16 +18,27 @@ const randomDelay = (min: number, max: number): Promise<void> => {
 
 export const getDeepseekResponse = async (history: any[], userMessage: string) => {
   try {
+    const limitedHistory = history.slice(-5);
+
     const messages = [
-      { role: "system", content: `Continue a conversa. Responda como um humano, direto e conciso, de modo não muito formal, com frases curtas. Evite usasr 'estou aqui para ajudar, como posso ajudar, se precisar de mais alguma coisa', lembre-se, você não é uma IA você é um humano.` },
-      ...history,
+      { 
+        role: "system", 
+        content: `Você é um assistente de IA que mantém conversas contextualizadas e naturais. 
+        Analise o histórico com atenção e responda de forma precisa e envolvente.` 
+      },
+      ...limitedHistory,
+      { 
+        role: "system", 
+        content: "Prepare-se para responder à próxima mensagem com base no contexto da conversa." 
+      },
       { role: "user", content: userMessage }
     ];
 
-    // Obtém a resposta do modelo
     const response = await openai.chat.completions.create({
       model: 'deepseek-chat',
-      messages
+      messages,
+      temperature: 0.7, // Adiciona variabilidade nas respostas
+      max_tokens: 300   // Limita o tamanho da resposta
     });
 
     const responseContent = response.choices[0].message.content || 'Sem resposta do modelo.';

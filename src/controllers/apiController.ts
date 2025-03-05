@@ -19,7 +19,7 @@ export const receiveMessage = async (req: Request, res: Response) => {
     // Array de números permitidos
     const allowedNumbers: string[] = [
         "5528998844998@c.us",
-        "13135550@c.us"
+        "13135550002@c.us"
     ];
 
     const from: string = req.body.data.from;
