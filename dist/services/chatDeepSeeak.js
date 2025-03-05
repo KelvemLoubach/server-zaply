@@ -30,19 +30,28 @@ const randomDelay = (min, max) => {
 };
 const getDeepseekResponse = (history, userMessage) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const limitedHistory = history.slice(-5);
         const messages = [
-            { role: "system", content: `Se basei nesse texto ${process.env.CHAT_BASE} e continue a conversa. Responda como um humano, direto e conciso, de modo não muito formal, com frases curtas. Evite usasr 'estou aqui para ajudar, como posso ajudar, se precisar de mais alguma coisa', lembre-se, você não é uma IA você é um humano.` },
-            ...history,
+            {
+                role: "system",
+                content: process.env.PROMPT_DEEP
+            },
+            ...limitedHistory,
+            {
+                role: "system",
+                content: "Prepare-se para responder à próxima mensagem com base no contexto da conversa."
+            },
             { role: "user", content: userMessage }
         ];
-        // Obtém a resposta do modelo
         const response = yield configDeep_1.openai.chat.completions.create({
             model: 'deepseek-chat',
-            messages
+            messages,
+            temperature: 0.7, // Adiciona variabilidade nas respostas
+            max_tokens: 300 // Limita o tamanho da resposta
         });
         const responseContent = response.choices[0].message.content || 'Sem resposta do modelo.';
         // Aguarda um tempo aleatório entre 5 e 120 segundos (ajuste conforme necessário)
-        yield randomDelay(30, 220);
+        yield randomDelay(2, 4);
         return responseContent;
     }
     catch (error) {

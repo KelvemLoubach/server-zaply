@@ -5,7 +5,7 @@ import {healthCheck} from '../controllers/towakeup'
 
 const router = Router();
 
-router.post("/receiveMessage",validateWebhookToken,receiveMessage);
+router.post("/receiveMessage",receiveMessage);
 router.get("/healthCheck",healthCheck);
 
 export default router;

@@ -23,13 +23,15 @@ const receiveMessage = (req, res) => __awaiter(void 0, void 0, void 0, function*
         // Array de números permitidos
         const allowedNumbers = [
             "5528998844998@c.us",
-            "13135550002@c.us"
+            "13135550002@c.us",
+            "5514998373060@c.us"
         ];
         const from = req.body.data.from;
         const message = req.body.data.body;
         const number = req.body.data.from;
+        console.log(from);
         // Verifica se o número está na lista de permitidos
-        if (!allowedNumbers.includes(from)) {
+        if (from !== "5514998373060@c.us") {
             return res.status(http_status_codes_1.StatusCodes.FORBIDDEN).json({
                 success: false,
                 error: "Número não autorizado"

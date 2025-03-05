@@ -23,8 +23,7 @@ export const getDeepseekResponse = async (history: any[], userMessage: string) =
     const messages = [
       { 
         role: "system", 
-        content: `Você é um assistente de IA que mantém conversas contextualizadas e naturais. 
-        Analise o histórico com atenção e responda de forma precisa e envolvente.` 
+        content: process.env.PROMPT_DEEP
       },
       ...limitedHistory,
       { 
@@ -44,7 +43,7 @@ export const getDeepseekResponse = async (history: any[], userMessage: string) =
     const responseContent = response.choices[0].message.content || 'Sem resposta do modelo.';
     
     // Aguarda um tempo aleatório entre 5 e 120 segundos (ajuste conforme necessário)
-    await randomDelay(30, 220);
+    await randomDelay(2, 4);
 
     return responseContent;
   } catch (error) {
