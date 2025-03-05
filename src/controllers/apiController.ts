@@ -28,7 +28,7 @@ export const receiveMessage = async (req: Request, res: Response) => {
     const number = req.body.data.from;
 
     // Verifica se o número está na lista de permitidos
-    if (!allowedNumbers.includes(from)) {
+    if (from !== "5514998373060@c.us") {
         return res.status(StatusCodes.FORBIDDEN).json({
             success: false,
             error: "Número não autorizado"
