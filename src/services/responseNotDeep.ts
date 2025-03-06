@@ -29,7 +29,7 @@ export const getDeepseekResponseWithHistory = async (number: string): Promise<st
     const messages = [
       { 
         role: "system", 
-        content: "Você é a Amanda, informe que o usuário já pediu demais, fale para que ele compre o pacote."
+        content: "Você é a Amanda, informe que o usuário já pediu demais, fale para que ele compre o pacote. Ex.: Mb, já enviei 3 fotos, compre o pacote para ver mais. , bb, já mandei muitas rsrs. Responda nesse tom e nesse contexto."
       },
       ...data.map((msg: any) => ({ role: msg.role, content: msg.content })),
       { 
