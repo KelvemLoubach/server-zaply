@@ -6,14 +6,21 @@ dotenv.config();
 // Configurações
 const ZAPLY_AUTH_TOKEN = process.env.ZAPLY_AUTH_TOKEN;
 const INSTANCE_ID = process.env.INSTANCE_ID;
+const URL_RANDON = process.env.URL_RANDON?.split(",") || [];
 
-// Função para extrair a URL específica e o restante do texto
-const extractUrlAndText = (text: string): { url: string | null; remainingText: string } => {
-    const specificUrlRegex = /https:\/\/dsqzklhtbknituailkrf[^\s]*/;
-    const matches = text.match(specificUrlRegex);
-    const url = matches ? matches[0] : null;
-    const remainingText = url ? text.replace(url, "").trim() : text;
-    return { url, remainingText };
+// Função para extrair o código específico e o restante do texto
+const extractCodeAndText = (text: string): { code: string | null; remainingText: string } => {
+    const codeRegex = /\b[A-Z0-9]{10}\b/; // Captura um código de 10 caracteres alfanuméricos maiúsculos
+    const matches = text.match(codeRegex);
+    const code = matches ? matches[0] : null;
+    const remainingText = code ? text.replace(code, "").trim() : text;
+    return { code, remainingText };
+};
+
+// Função para escolher uma URL aleatória
+const getRandomUrl = (): string | null => {
+    if (URL_RANDON.length === 0) return null;
+    return URL_RANDON[Math.floor(Math.random() * URL_RANDON.length)];
 };
 
 // Função para enviar resposta pelo Zaply
@@ -29,22 +36,23 @@ export const sendMessageResponse = async (
     // Extraindo o número corretamente (caso venha no formato WhatsApp com @)
     let numberPart = number.split("@")[0];
 
-    // Verifica e extrai a URL específica e o restante do texto
-    const { url: extractedUrl, remainingText } = extractUrlAndText(deepseekResponse);
+    // Verifica e extrai o código específico e o restante do texto
+    const { code: extractedCode, remainingText } = extractCodeAndText(deepseekResponse);
+    const selectedUrl = extractedCode ? getRandomUrl() : null;
 
     let raw;
     let endpoint;
-    if (extractedUrl) {
-      // Se houver URL, monta payload para mídia
+    if (selectedUrl) {
+      // Se houver código, usa uma URL aleatória e monta payload para mídia
       raw = JSON.stringify({
         number: numberPart,
-        media_caption: remainingText || "Só essa rsrs",
+        media_caption: remainingText || "Confira esta mídia!",
         media_name: "Previa.png",
-        media_url: extractedUrl,
+        media_url: selectedUrl,
       });
       endpoint = `https://api.zaply.dev/v1/instance/${INSTANCE_ID}/message/send/media`;
     } else {
-      // Se não houver URL, monta payload para mensagem de texto
+      // Se não houver código, monta payload para mensagem de texto
       raw = JSON.stringify({
         message: deepseekResponse,
         number: numberPart,
