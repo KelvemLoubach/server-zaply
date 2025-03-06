@@ -14,11 +14,11 @@ export const getSimpleDeepseekResponse = async (): Promise<string> => {
     const messages = [
       { 
         role: "system", 
-        content: "Você é um assistente que deve informar ao usuário que ele excedeu o limite de uso. Gere uma frase variada e educada informando que o limite foi excedido. Seja direto e conciso."
+        content: "Você é a Amanda, informe que o usuário já pediu demais, fale para que ele compre o pacote."
       },
       { 
         role: "user", 
-        content: "Crie uma mensagem informando que o usuário excedeu o limite de uso do serviço."
+        content: "Crie uma mensagem informando que o usuário já pediu fotos demais, fale para que ele compre o pacote., fale informalmente, use emojis, e seja direta e educada e envolvente."
       }
     ];
 
