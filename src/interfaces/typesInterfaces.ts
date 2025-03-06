@@ -1,6 +1,8 @@
 export interface ZaplyMessageRequest {
     message: string;
     number: string;
+    media_url?: string;
+    media_name?: string;
 }
 
 
