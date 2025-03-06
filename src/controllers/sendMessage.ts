@@ -43,18 +43,30 @@ export const sendMessageResponse = async (
 
     let raw;
     let endpoint;
+
     if (selectedUrl) {
-      // Se houver código, usa uma URL aleatória e monta payload para mídia
-      raw = JSON.stringify({
-        number: numberPart,
-        media_caption: remainingText || "Confira esta mídia!",
-        media_name: "Previa.png",
-        media_url: selectedUrl,
-      });
-      incrementFreePhoto(number);
-      endpoint = `https://api.zaply.dev/v1/instance/${INSTANCE_ID}/message/send/media`;
+      // Incrementa o valor de free_photo apenas se houver um código extraído
+      const { newValue, error } = await incrementFreePhoto(number);
+      if (error) {
+        console.error("Erro ao incrementar free_photo:", error);
+      }
+      
+      if (newValue > 3) {
+        raw = JSON.stringify({
+          message: "Você já pediu demais rsrs",
+          number: numberPart,
+        });
+        endpoint = `https://api.zaply.dev/v1/instance/${INSTANCE_ID}/message/send`;
+      } else {
+        raw = JSON.stringify({
+          number: numberPart,
+          media_caption: remainingText || "Confira esta mídia!",
+          media_name: "Previa.png",
+          media_url: selectedUrl,
+        });
+        endpoint = `https://api.zaply.dev/v1/instance/${INSTANCE_ID}/message/send/media`;
+      }
     } else {
-      // Se não houver código, monta payload para mensagem de texto
       raw = JSON.stringify({
         message: deepseekResponse,
         number: numberPart,

@@ -1,6 +1,6 @@
 import { supabase } from '../config/configSupabase';
 
-export const incrementFreePhoto = async (number: string): Promise<boolean> => {
+export const incrementFreePhoto = async (number: string): Promise<{newValue: number, error: boolean }> => {
     try {
       // Busca o registro atual para obter o valor atual de free_photo
       const { data, error: fetchError } = await supabase
@@ -11,7 +11,7 @@ export const incrementFreePhoto = async (number: string): Promise<boolean> => {
       
       if (fetchError) {
         console.error('Erro ao buscar registro para incrementar free_photo:', fetchError);
-        return false;
+        return { newValue: 0, error: true };
       }
       
       // Incrementa o valor (ou define como 1 se for null/undefined)
@@ -26,14 +26,14 @@ export const incrementFreePhoto = async (number: string): Promise<boolean> => {
       
       if (updateError) {
         console.error('Erro ao incrementar free_photo:', updateError);
-        return false;
+        return { newValue: 0, error: true };
       }
       
       console.log(`free_photo incrementado para ${newValue} para o usuário ${number}`);
-      return true;
+      return { newValue, error: false };
     } catch (error) {
       console.error('Erro ao processar incremento de free_photo:', error);
-      return false;
+      return { newValue: 0, error: true };
     }
   };
   
