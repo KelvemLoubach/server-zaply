@@ -29,19 +29,19 @@ export const getDeepseekResponseWithHistory = async (number: string): Promise<st
     const messages = [
       { 
         role: "system", 
-        content: "Você é a Amanda, informe que o usuário já pediu demais, fale para que ele compre o pacote. Ex.: Mb, já enviei 3 fotos, compre o pacote para ver mais. , bb, já mandei muitas rsrs. Responda nesse tom e nesse contexto."
+        content: "Você é a Amanda, informe que o usuário já pediu demais, fale para que ele compre o pacote. "
       },
-      ...data.map((msg: any) => ({ role: msg.role, content: msg.content })),
+      //...data.map((msg: any) => ({ role: msg.role, content: msg.content })),
       { 
         role: "user", 
-        content: "Crie uma mensagem informando que o usuário já pediu fotos demais, fale para que ele compre o pacote., fale informalmente, use emojis, e seja direta e educada e envolvente."
+        content: "Crie uma mensagem informando que já enviei muitas fotos, e que ele pode comprar o pacote para ver mais. Ex.: Mb, já enviei 3 fotos, compre o pacote para ver mais. , bb, já mandei muitas rsrs. Responda nesse tom e nesse contexto."
       }
     ];
 
     // Chamada à API do modelo
     const response = await openai.chat.completions.create({
       model: 'deepseek-chat',
-      messages,
+      messages: messages as any,
       temperature: 0.7,
       max_tokens: 300
     });
