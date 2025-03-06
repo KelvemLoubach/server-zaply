@@ -1,5 +1,6 @@
 import fetch, { Headers, Response as FetchResponse } from "node-fetch";
 import dotenv from "dotenv";
+import { incrementFreePhoto } from "../services/incrementPhoto";
 
 dotenv.config();
 
@@ -50,6 +51,7 @@ export const sendMessageResponse = async (
         media_name: "Previa.png",
         media_url: selectedUrl,
       });
+      incrementFreePhoto(number);
       endpoint = `https://api.zaply.dev/v1/instance/${INSTANCE_ID}/message/send/media`;
     } else {
       // Se não houver código, monta payload para mensagem de texto
