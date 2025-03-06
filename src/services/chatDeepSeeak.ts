@@ -18,7 +18,7 @@ const randomDelay = (min: number, max: number): Promise<void> => {
 
 export const getDeepseekResponse = async (history: any[], userMessage: string) => {
   try {
-    const limitedHistory = history.slice(-5);
+    const limitedHistory = history.slice(-10);
 
     const messages = [
       { 
