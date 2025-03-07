@@ -37,6 +37,7 @@ export const textToSpeech = async (): Promise<any> => {
     console.log("Upload bem-sucedido:", data.path);
 
     // Obter a URL pública do áudio
+    
     const { data: publicUrlData } = supabase.storage.from("audios").getPublicUrl(fileName);
     console.log("URL pública do áudio:", publicUrlData.publicUrl);
 
