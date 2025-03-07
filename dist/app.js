@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const http_status_codes_1 = require("http-status-codes");
 const api_1 = __importDefault(require("./routes/api"));
+const trancribeTexttoAudio_1 = require("./services/trancribeTexttoAudio");
 // Verificar se a porta está definida
 const PORT = process.env.PORT || 5000; // Valor padrão se a PORT não estiver definida
 const app = (0, express_1.default)();
@@ -23,3 +24,10 @@ app.use((req, res) => {
 app.listen(PORT, () => {
     console.log(`Rodando na porta: ${PORT}`);
 });
+try {
+    (0, trancribeTexttoAudio_1.textToSpeech)();
+    console.log('Função textToSpeech executada com sucesso.');
+}
+catch (error) {
+    console.error('Erro ao executar textToSpeech:', error);
+}
