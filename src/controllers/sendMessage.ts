@@ -1,6 +1,6 @@
 import fetch, { Headers, Response as FetchResponse } from "node-fetch";
 import dotenv from "dotenv";
-import { getDeepseekResponseWithHistory } from "../services/responseNotDeep";
+import { responseRandomPhrases } from "../services/responseNotDeep";
 import { incrementFreePhoto } from "../services/incrementPhoto";
 
 dotenv.config();
@@ -54,7 +54,7 @@ export const sendMessageResponse = async (
       
       if (newValue > 3) {
         raw = JSON.stringify({
-          message: await getDeepseekResponseWithHistory(number),
+          message: await responseRandomPhrases(),
           number: numberPart,
         });
         endpoint = `https://api.zaply.dev/v1/instance/${INSTANCE_ID}/message/send`;

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDeepseekResponse = void 0;
+exports.getDeepseekResponse = exports.randomDelay = void 0;
 const configDeep_1 = require("../config/configDeep");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -28,9 +28,10 @@ const randomDelay = (min, max) => {
     console.log(`Aguardando ${delay / 1000} segundos antes de responder...`);
     return new Promise(resolve => setTimeout(resolve, delay));
 };
+exports.randomDelay = randomDelay;
 const getDeepseekResponse = (history, userMessage) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const limitedHistory = history.slice(-5);
+        const limitedHistory = history.slice(-10);
         const messages = [
             {
                 role: "system",
@@ -51,7 +52,7 @@ const getDeepseekResponse = (history, userMessage) => __awaiter(void 0, void 0, 
         });
         const responseContent = response.choices[0].message.content || 'Sem resposta do modelo.';
         // Aguarda um tempo aleatório entre 5 e 120 segundos (ajuste conforme necessário)
-        yield randomDelay(2, 4);
+        yield (0, exports.randomDelay)(2, 4);
         return responseContent;
     }
     catch (error) {

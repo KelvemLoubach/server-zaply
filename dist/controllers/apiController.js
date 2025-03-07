@@ -29,7 +29,7 @@ const receiveMessage = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const from = req.body.data.from;
         const message = req.body.data.body;
         const number = req.body.data.from;
-        console.log(from);
+        console.log(req.body.data);
         // Verifica se o número está na lista de permitidos
         if (from !== "5514998373060@c.us") {
             return res.status(http_status_codes_1.StatusCodes.FORBIDDEN).json({

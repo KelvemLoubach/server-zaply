@@ -1,6 +1,7 @@
 import { supabase } from '../config/configSupabase';
 import { openai } from '../config/configDeep';
 import dotenv from 'dotenv';
+import { randomDelay } from './chatDeepSeeak';
 
 dotenv.config();
 
@@ -10,44 +11,30 @@ dotenv.config();
  * @param number Número do usuário para buscar as mensagens
  * @returns Promise com a resposta do modelo como string
  */
-export const getDeepseekResponseWithHistory = async (number: string): Promise<string> => {
+export const responseRandomPhrases = async (): Promise<string> => {
   try {
-    // Consulta ao Supabase para obter as 10 últimas mensagens do usuário
-    const { data, error } = await supabase
-      .from('messages')
-      .select('content')
-      .eq('user_id', number)
-      .order('created_at', { ascending: false })
-      .limit(10);
+   
 
-    if (error) {
-      console.error('Erro ao buscar mensagens:', error);
-      return 'Erro ao buscar histórico de mensagens.';
-    }
+    function getRandomResponse(): string {
+      // Obtém a string de frases do ambiente
+      const responses = process.env.PROMPT_DEEP_NOT_DEEP || '';
+      
+      // Divide a string em um array de frases
+      const phrases = responses.split(' - ');
+  
+      // Gera um índice aleatório
+      const randomIndex = Math.floor(Math.random() * phrases.length);
+  
+      // Retorna a frase aleatória
+      return phrases[randomIndex].trim(); // trim() para remover espaços em branco extras
+  }
 
-    // Prepara o histórico de mensagens para o modelo
-    const messages = [
-      { 
-        role: "system", 
-        content: "Você é a Amanda, informe que o usuário já pediu demais, fale para que ele compre o pacote. "
-      },
-      //...data.map((msg: any) => ({ role: msg.role, content: msg.content })),
-      { 
-        role: "user", 
-        content: "Crie uma mensagem informando que já enviei muitas fotos, e que ele pode comprar o pacote para ver mais. Ex.: Mb, já enviei 3 fotos, compre o pacote para ver mais. , bb, já mandei muitas rsrs. Responda nesse tom e nesse contexto."
-      }
-    ];
+    // Extrai eretorna o conteúdo da resposta
+    const responseContent = getRandomResponse();
+   
 
-    // Chamada à API do modelo
-    const response = await openai.chat.completions.create({
-      model: 'deepseek-chat',
-      messages: messages as any,
-      temperature: 0.7,
-      max_tokens: 300
-    });
-
-    // Extrai e retorna o conteúdo da resposta
-    const responseContent = response.choices[0].message.content || 'Sem resposta do modelo.';
+    await randomDelay(2, 4);
+    
     return responseContent;
     
   } catch (error) {

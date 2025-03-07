@@ -44,21 +44,31 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendMessageResponse = void 0;
 const node_fetch_1 = __importStar(require("node-fetch"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const responseNotDeep_1 = require("../services/responseNotDeep");
+const incrementPhoto_1 = require("../services/incrementPhoto");
 dotenv_1.default.config();
 // Configurações
 const ZAPLY_AUTH_TOKEN = process.env.ZAPLY_AUTH_TOKEN;
 const INSTANCE_ID = process.env.INSTANCE_ID;
-// Função para extrair a URL específica e o restante do texto
-const extractUrlAndText = (text) => {
-    const specificUrlRegex = /https:\/\/dsqzklhtbknituailkrf[^\s]*/;
-    const matches = text.match(specificUrlRegex);
-    const url = matches ? matches[0] : null;
-    const remainingText = url ? text.replace(url, "").trim() : text;
-    return { url, remainingText };
+const URL_RANDON = ((_a = process.env.URL_RANDON) === null || _a === void 0 ? void 0 : _a.split(",")) || [];
+// Função para extrair o código específico e o restante do texto
+const extractCodeAndText = (text) => {
+    const codeRegex = /\b[A-Z0-9]{10}\b/; // Captura um código de 10 caracteres alfanuméricos maiúsculos
+    const matches = text.match(codeRegex);
+    const code = matches ? matches[0] : null;
+    const remainingText = code ? text.replace(code, "").trim() : text;
+    return { code, remainingText };
+};
+// Função para escolher uma URL aleatória
+const getRandomUrl = () => {
+    if (URL_RANDON.length === 0)
+        return null;
+    return URL_RANDON[Math.floor(Math.random() * URL_RANDON.length)];
 };
 // Função para enviar resposta pelo Zaply
 const sendMessageResponse = (deepseekResponse, number) => __awaiter(void 0, void 0, void 0, function* () {
@@ -68,22 +78,35 @@ const sendMessageResponse = (deepseekResponse, number) => __awaiter(void 0, void
         headers.append("Content-Type", "application/json");
         // Extraindo o número corretamente (caso venha no formato WhatsApp com @)
         let numberPart = number.split("@")[0];
-        // Verifica e extrai a URL específica e o restante do texto
-        const { url: extractedUrl, remainingText } = extractUrlAndText(deepseekResponse);
+        // Verifica e extrai o código específico e o restante do texto
+        const { code: extractedCode, remainingText } = extractCodeAndText(deepseekResponse);
+        const selectedUrl = extractedCode ? getRandomUrl() : null;
         let raw;
         let endpoint;
-        if (extractedUrl) {
-            // Se houver URL, monta payload para mídia
-            raw = JSON.stringify({
-                number: numberPart,
-                media_caption: remainingText || "Só essa rsrs",
-                media_name: "Previa.png",
-                media_url: extractedUrl,
-            });
-            endpoint = `https://api.zaply.dev/v1/instance/${INSTANCE_ID}/message/send/media`;
+        if (selectedUrl) {
+            // Incrementa o valor de free_photo apenas se houver um código extraído
+            const { newValue, error } = yield (0, incrementPhoto_1.incrementFreePhoto)(number);
+            if (error) {
+                console.error("Erro ao incrementar free_photo:", error);
+            }
+            if (newValue > 3) {
+                raw = JSON.stringify({
+                    message: yield (0, responseNotDeep_1.responseRandomPhrases)(),
+                    number: numberPart,
+                });
+                endpoint = `https://api.zaply.dev/v1/instance/${INSTANCE_ID}/message/send`;
+            }
+            else {
+                raw = JSON.stringify({
+                    number: numberPart,
+                    media_caption: remainingText || "Confira esta mídia!",
+                    media_name: "Previa.png",
+                    media_url: selectedUrl,
+                });
+                endpoint = `https://api.zaply.dev/v1/instance/${INSTANCE_ID}/message/send/media`;
+            }
         }
         else {
-            // Se não houver URL, monta payload para mensagem de texto
             raw = JSON.stringify({
                 message: deepseekResponse,
                 number: numberPart,

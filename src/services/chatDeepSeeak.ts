@@ -9,7 +9,7 @@ dotenv.config();
  * @param max Tempo máximo em segundos
  * @returns Promise que resolve após o tempo especificado
  */
-const randomDelay = (min: number, max: number): Promise<void> => {
+export const randomDelay = (min: number, max: number): Promise<void> => {
   // Converte segundos para milissegundos e gera um número aleatório entre min e max
   const delay = Math.floor(Math.random() * (max - min + 1) + min) * 1000;
   console.log(`Aguardando ${delay/1000} segundos antes de responder...`);
