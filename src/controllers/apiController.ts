@@ -1,12 +1,10 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { saveMessage } from "../services/saveSupabase";
-import { sendMessageResponse } from "../controllers/sendMessage";
+import { processAudio } from "../services/openiaTranscribe";
 import {
   ApiResponse,
   Conversation,
-  MessageRequest,
-  ZaplyMessageRequest,
 } from "../interfaces/typesInterfaces";
 import dotenv from "dotenv";
 
@@ -26,6 +24,10 @@ export const receiveMessage = async (req: Request, res: Response) => {
     const from: string = req.body.data.from;
     const message = req.body.data.body;
     const number = req.body.data.from;
+    let type = req.body.data.type;
+
+    let audioTranscription: string | null = null;
+    
     console.log(req.body.data);
     // Verifica se o número está na lista de permitidos
     if (from !== "5514998373060@c.us") {
@@ -35,18 +37,31 @@ export const receiveMessage = async (req: Request, res: Response) => {
         } as ApiResponse);
     }
 
-    // Processar a mensagem recebida
+    if(req.body.data.mimetype === "audio/ogg; codecs=opus"){
+      audioTranscription = await processAudio(req.body.data.url);
+      
+      if(audioTranscription === null){
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          success: false,
+          error: "Erro ao processar o áudio"
+        } as ApiResponse);
+      }
+    }
+        
+    const messageContent = message || audioTranscription || "";
 
     const dataFromWhats: Conversation = {
       number: number,
-      contente: [{ role: "user", content: message }],
+      contente: [{ role: "user", content: messageContent }],
+      type: type
     };
     console.log(dataFromWhats);
 
     await saveMessage(
       dataFromWhats.number,
       dataFromWhats.contente[0].role,
-      dataFromWhats.contente[0].content
+      dataFromWhats.contente[0].content,
+      dataFromWhats.type
     );
   } catch (error) {
     const errorMessage =

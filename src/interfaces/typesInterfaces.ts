@@ -23,6 +23,7 @@ export interface ApiResponse {
 
   export interface Conversation {
     number: string;
+    type: string;
     nome?: string;
     contente: { role: "user" | "assistant"; content: string }[];
   }

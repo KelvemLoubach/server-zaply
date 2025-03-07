@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.receiveMessage = void 0;
 const http_status_codes_1 = require("http-status-codes");
 const saveSupabase_1 = require("../services/saveSupabase");
+const openiaTranscribe_1 = require("../services/openiaTranscribe");
 const dotenv_1 = __importDefault(require("dotenv"));
 const env = dotenv_1.default.config();
 const receiveMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -29,6 +30,8 @@ const receiveMessage = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const from = req.body.data.from;
         const message = req.body.data.body;
         const number = req.body.data.from;
+        let type = req.body.data.type;
+        let audioTranscription = null;
         console.log(req.body.data);
         // Verifica se o número está na lista de permitidos
         if (from !== "5514998373060@c.us") {
@@ -37,13 +40,23 @@ const receiveMessage = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 error: "Número não autorizado"
             });
         }
-        // Processar a mensagem recebida
+        if (req.body.data.mimetype === "audio/ogg; codecs=opus") {
+            audioTranscription = yield (0, openiaTranscribe_1.processAudio)(req.body.data.url);
+            if (audioTranscription === null) {
+                return res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                    success: false,
+                    error: "Erro ao processar o áudio"
+                });
+            }
+        }
+        const messageContent = message || audioTranscription || "";
         const dataFromWhats = {
             number: number,
-            contente: [{ role: "user", content: message }],
+            contente: [{ role: "user", content: messageContent }],
+            type: type
         };
         console.log(dataFromWhats);
-        yield (0, saveSupabase_1.saveMessage)(dataFromWhats.number, dataFromWhats.contente[0].role, dataFromWhats.contente[0].content);
+        yield (0, saveSupabase_1.saveMessage)(dataFromWhats.number, dataFromWhats.contente[0].role, dataFromWhats.contente[0].content, dataFromWhats.type);
     }
     catch (error) {
         const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";

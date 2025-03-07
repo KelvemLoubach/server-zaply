@@ -13,7 +13,7 @@ exports.saveMessage = void 0;
 const configSupabase_1 = require("../config/configSupabase");
 const chatDeepSeeak_1 = require("./chatDeepSeeak");
 const sendMessage_1 = require("../controllers/sendMessage");
-const saveMessage = (number, role, content) => __awaiter(void 0, void 0, void 0, function* () {
+const saveMessage = (number, role, content, type) => __awaiter(void 0, void 0, void 0, function* () {
     // Passo 1: Verifica se o usuário já existe
     const { data: existingUser, error: userError } = yield configSupabase_1.supabase
         .from('users')
@@ -51,9 +51,12 @@ const saveMessage = (number, role, content) => __awaiter(void 0, void 0, void 0,
     if (existingMessage && existingMessage.content) {
         updatedContent = [...existingMessage.content, { role: 'user', content }];
     }
-    const responseDeep = yield (0, chatDeepSeeak_1.getDeepseekResponse)(updatedContent, content);
+    const responseDeep = yield (0, chatDeepSeeak_1.getDeepseekResponse)(updatedContent, content, type, number);
     updatedContent = [...updatedContent, { role: 'assistant', content: responseDeep }];
-    yield (0, sendMessage_1.sendMessageResponse)(responseDeep, number);
+    // Envia a resposta para o usuário
+    if (type !== "ptt") {
+        yield (0, sendMessage_1.sendMessageResponse)(responseDeep, number);
+    }
     console.log("Conversation History (JSON):", JSON.stringify(updatedContent, null, 2));
     // Passo 4: Insere ou atualiza a conversa na tabela `messages`
     if (existingMessage) {

@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getDeepseekResponse = exports.randomDelay = void 0;
 const configDeep_1 = require("../config/configDeep");
 const dotenv_1 = __importDefault(require("dotenv"));
+const trancribeTexttoAudio_1 = require("./trancribeTexttoAudio");
+const sendMessageAudio_1 = require("../controllers/sendMessageAudio");
 dotenv_1.default.config();
 /**
  * Cria um atraso (delay) de tempo aleatório
@@ -29,7 +31,7 @@ const randomDelay = (min, max) => {
     return new Promise(resolve => setTimeout(resolve, delay));
 };
 exports.randomDelay = randomDelay;
-const getDeepseekResponse = (history, userMessage) => __awaiter(void 0, void 0, void 0, function* () {
+const getDeepseekResponse = (history, userMessage, type, number) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const limitedHistory = history.slice(-10);
         const messages = [
@@ -53,6 +55,10 @@ const getDeepseekResponse = (history, userMessage) => __awaiter(void 0, void 0, 
         const responseContent = response.choices[0].message.content || 'Sem resposta do modelo.';
         // Aguarda um tempo aleatório entre 5 e 120 segundos (ajuste conforme necessário)
         yield (0, exports.randomDelay)(2, 4);
+        if (type === "ptt") {
+            const urlAudio = yield (0, trancribeTexttoAudio_1.textToSpeech)(responseContent);
+            yield (0, sendMessageAudio_1.sendMediaMessage)(urlAudio, number);
+        }
         return responseContent;
     }
     catch (error) {

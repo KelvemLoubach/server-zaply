@@ -5,55 +5,45 @@ import fs from "fs";
 import path from "path";
 
 /**
- * Baixa o arquivo de áudio de uma URL e salva localmente.
+ * Baixa o arquivo de áudio de uma URL e salva localmente antes de transcrevê-lo.
  * @param audioUrl URL do arquivo de áudio
- * @returns Caminho do arquivo salvo localmente
+ * @returns Texto transcrito ou null em caso de erro
  */
-export const downloadAudio = async (audioUrl: string): Promise<string | null> => {
-  try {
-    const response = await axios({
-      url: audioUrl,
-      method: "GET",
-      responseType: "stream",
-    });
-
-    const filePath = path.join(__dirname, "audio.oga");
-    const writer = fs.createWriteStream(filePath);
-    response.data.pipe(writer);
-
-    return new Promise((resolve, reject) => {
-      writer.on("finish", () => resolve(filePath));
-      writer.on("error", reject);
-    });
-  } catch (error) {
-    console.error("Erro ao baixar o áudio:", error);
-    return null;
-  }
-};
-
-/**
- * Transcreve um áudio usando a OpenAI Whisper API.
- * @param audioPath Caminho do arquivo de áudio salvo localmente
- * @returns Texto transcrito
- */
-const transcribeAudio = async (audioPath: string): Promise<string | null> => {
+export const processAudio = async (audioUrl: string): Promise<string | null> => {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     console.error("Erro: Chave da API não configurada!");
     return null;
   }
 
-  if (!fs.existsSync(audioPath)) {
-    console.error("Erro: Arquivo de áudio não encontrado!");
-    return null;
-  }
+  // Define diretório temporário e caminho do arquivo
+  const tempDir = path.join(__dirname, "temp");
+  if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
+  
+  const filePath = path.join(tempDir, "audio.oga");
 
   try {
+    // 1. Baixar o arquivo de áudio
+    const response = await axios({
+      url: audioUrl,
+      method: "GET",
+      responseType: "stream",
+    });
+
+    const writer = fs.createWriteStream(filePath);
+    response.data.pipe(writer);
+
+    await new Promise<void>((resolve, reject) => {
+      writer.on("finish", resolve);
+      writer.on("error", reject);
+    });
+
+    // 2. Criar o FormData para a API Whisper
     const formData = new FormData();
-    formData.append("file", fs.createReadStream(audioPath));
+    formData.append("file", fs.createReadStream(filePath));
     formData.append("model", "whisper-1");
 
-    const response = await axios.post<{ text: string }>(
+    const responseTranscription = await axios.post<{ text: string }>(
       "https://api.openai.com/v1/audio/transcriptions",
       formData,
       {
@@ -64,25 +54,15 @@ const transcribeAudio = async (audioPath: string): Promise<string | null> => {
       }
     );
 
-    return response.data.text;
+    const transcribedText = responseTranscription.data.text;
+
+    // 3. Apagar o arquivo temporário
+    fs.unlinkSync(filePath);
+
+    return transcribedText;
   } catch (error: any) {
-    console.error("Erro ao transcrever:", error.response?.data || error);
+    console.error("Erro no processo de transcrição:", error.response?.data || error);
     return null;
   }
-};
-
-/**
- * Processo completo: baixa o áudio e transcreve.
- * @param audioUrl URL do arquivo de áudio
- */
-const processAudio = async (audioUrl: string): Promise<void> => {
-  const filePath = await downloadAudio(audioUrl);
-  if (!filePath) return;
-
-  const text = await transcribeAudio(filePath);
-  if (text) console.log("Texto transcrito:", text);
-
-  // Remove o arquivo temporário
-  fs.unlinkSync(filePath);
 };
 

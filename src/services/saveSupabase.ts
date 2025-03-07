@@ -2,7 +2,7 @@ import {supabase} from '../config/configSupabase';
 import { getDeepseekResponse } from './chatDeepSeeak';
 import { sendMessageResponse } from '../controllers/sendMessage';
 
-export const saveMessage = async (number: string, role: "user" | "assistant", content: string) => {
+export const saveMessage = async (number: string, role: "user" | "assistant", content: string, type: string) => {
   // Passo 1: Verifica se o usuário já existe
   const { data: existingUser, error: userError } = await supabase
     .from('users')
@@ -48,10 +48,13 @@ export const saveMessage = async (number: string, role: "user" | "assistant", co
     updatedContent = [...existingMessage.content, { role: 'user', content }];  
   }
 
-  const responseDeep = await getDeepseekResponse(updatedContent, content);
+  const responseDeep = await getDeepseekResponse(updatedContent, content, type, number);
   updatedContent = [...updatedContent, { role: 'assistant', content: responseDeep }];
 
-  await sendMessageResponse(responseDeep, number);
+  // Envia a resposta para o usuário
+  if(type !== "ptt"){
+    await sendMessageResponse(responseDeep, number);
+  }
   
   console.log("Conversation History (JSON):", JSON.stringify(updatedContent, null, 2));
 
