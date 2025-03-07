@@ -46,10 +46,10 @@ export const getDeepseekResponse = async (history: any[], userMessage: string, t
     // Aguarda um tempo aleatório entre 5 e 120 segundos (ajuste conforme necessário)
     await randomDelay(2, 4);
 
-    if(type === "ptt"){
-       const urlAudio = await textToSpeech(responseContent) as string;
-        await sendMediaMessage(urlAudio, number);
-    }
+    // if(type === "ptt"){
+    //    const urlAudio = await textToSpeech(responseContent) as string;
+    //     await sendMediaMessage(urlAudio, number);
+    // }
 
     return responseContent;
     

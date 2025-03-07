@@ -91,9 +91,4 @@ export const textToSpeech = async (text: string, voice: string = "alloy"): Promi
   }
 };
 
-// Teste direto no arquivo
-if (require.main === module) {
-  textToSpeech("Olá, este é um teste de conversão de texto para áudio no Supabase!", "nova").then((url) => {
-    if (url) console.log("Áudio disponível em:", url);
-  });
-}
+
