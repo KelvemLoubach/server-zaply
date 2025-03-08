@@ -17,14 +17,22 @@ export const randomDelay = (min: number, max: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, delay));
 };
 
+let contentPromppt: string | null = null;
+
 export const getDeepseekResponse = async (history: any[], userMessage: string, type: string, number: string) => {
   try {
     const limitedHistory = history.slice(-10);
 
+    contentPromppt = process.env.PROMPT_DEEP as string;
+    
+    if(type === "ptt"){
+      contentPromppt = process.env.PROMPT_DEEP_AUDIO as string;
+    }
+
     const messages = [
       { 
         role: "system", 
-        content: process.env.PROMPT_DEEP
+        content: contentPromppt
       },
       ...limitedHistory,
       { 
@@ -46,10 +54,10 @@ export const getDeepseekResponse = async (history: any[], userMessage: string, t
     // Aguarda um tempo aleatório entre 5 e 120 segundos (ajuste conforme necessário)
     await randomDelay(2, 4);
 
-    // if(type === "ptt"){
-    //    const urlAudio = await textToSpeech(responseContent) as string;
-    //     await sendMediaMessage(urlAudio, number);
-    // }
+    if(type === "ptt"){
+       const urlAudio = await textToSpeech(responseContent) as string;
+        await sendMediaMessage(urlAudio, number);
+     }
 
     return responseContent;
     

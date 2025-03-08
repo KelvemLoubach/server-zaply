@@ -54,7 +54,9 @@ const saveMessage = (number, role, content, type) => __awaiter(void 0, void 0, v
     const responseDeep = yield (0, chatDeepSeeak_1.getDeepseekResponse)(updatedContent, content, type, number);
     updatedContent = [...updatedContent, { role: 'assistant', content: responseDeep }];
     // Envia a resposta para o usuário
-    yield (0, sendMessage_1.sendMessageResponse)(responseDeep, number);
+    if (type !== "ptt") {
+        yield (0, sendMessage_1.sendMessageResponse)(responseDeep, number);
+    }
     console.log("Conversation History (JSON):", JSON.stringify(updatedContent, null, 2));
     // Passo 4: Insere ou atualiza a conversa na tabela `messages`
     if (existingMessage) {

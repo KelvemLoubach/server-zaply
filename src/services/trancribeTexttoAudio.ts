@@ -6,15 +6,15 @@ import { openaiClient } from "../config/configOpenai";
 
 dotenv.config();
 
-export const textToSpeech = async (): Promise<any> => {
+export const textToSpeech = async (responseContent: string): Promise<string | null> => {
   try {
     const speechFilePath = path.resolve("./speech.mp3");
 
-    // Gerar o áudio com OpenAI
+    console.log(responseContent + " texto para gerar o audio");// Gerar o áudio com OpenAI
     const mp3 = await openaiClient.audio.speech.create({
       model: "tts-1",
       voice: "nova",
-      input: "Olá, como posso ajudar você hoje? Isso é um teste de áudio.",
+      input: responseContent,
     });
 
     const buffer = Buffer.from(await mp3.arrayBuffer());
@@ -24,11 +24,11 @@ export const textToSpeech = async (): Promise<any> => {
 
     // Upload para Supabase Storage
     const fileBuffer = fs.readFileSync(speechFilePath);
-    const fileName = `audios/${Date.now()}.mp3`; // Nome único
+    const fileName = `${Date.now()}.mp3`; // Nome único
 
     const { data, error } = await supabase.storage
       .from("audioresponse") // Nome do bucket
-      .upload(fileName, fileBuffer, {
+      .upload(`audios/${fileName}`, fileBuffer, {
         contentType: "audio/mpeg",
       });
 
@@ -36,10 +36,12 @@ export const textToSpeech = async (): Promise<any> => {
 
     console.log("Upload bem-sucedido:", data.path);
 
-    // Obter a URL pública do áudio
-    
-    const { data: publicUrlData } = supabase.storage.from("audios").getPublicUrl(fileName);
-    console.log("URL pública do áudio:", publicUrlData.publicUrl);
+    // Obter URL pública do áudio no Supabase
+    const { data: publicUrlData } = supabase.storage
+      .from("audioresponse") // Certifique-se de que o bucket está correto
+      .getPublicUrl(`audios/${fileName}`); // Adicione o caminho correto para a pasta
+
+    console.log("URL pública do áudio obtida:", publicUrlData.publicUrl);
 
     return publicUrlData.publicUrl;
   } catch (error: any) {

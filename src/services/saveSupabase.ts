@@ -52,8 +52,9 @@ export const saveMessage = async (number: string, role: "user" | "assistant", co
   updatedContent = [...updatedContent, { role: 'assistant', content: responseDeep }];
 
   // Envia a resposta para o usuário
- 
+ if(type !== "ptt"){
     await sendMessageResponse(responseDeep, number);
+ }
   
   
   console.log("Conversation History (JSON):", JSON.stringify(updatedContent, null, 2));

@@ -28,7 +28,7 @@ export const receiveMessage = async (req: Request, res: Response) => {
 
     let audioTranscription: string | null = null;
     
-    console.log(req.body.data);
+    
     // Verifica se o número está na lista de permitidos
     if (from !== "5514998373060@c.us") {
         return res.status(StatusCodes.FORBIDDEN).json({
