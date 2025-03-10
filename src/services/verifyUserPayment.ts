@@ -1,4 +1,5 @@
 import { supabase } from "../config/configSupabase";
+import { User } from "../interfaces/typesInterfaces";
 
 /**
  * Verifica e atualiza o status de pagamento dos usuários
@@ -37,7 +38,7 @@ export const checkExpiredPayments = async (): Promise<{
     }
     
     // Filtrar usuários com data_last_payment igual ou menor que a data atual
-    const expiredUsers = users.filter(user => {
+    const expiredUsers = users.filter((user: User) => {
       if (!user.data_last_payment) return false;
       
       // Converter a data_last_payment para objeto Date e remover a parte de hora
@@ -60,7 +61,7 @@ export const checkExpiredPayments = async (): Promise<{
     }
     
     // Extrair IDs dos usuários expirados
-    const expiredUserIds = expiredUsers.map(user => user.id);
+    const expiredUserIds = expiredUsers.map((user: User) => user.id);
     console.log("IDs dos usuários com pagamento expirado:", expiredUserIds);
     
     // Atualizar o campo payment para false para os usuários expirados
@@ -89,13 +90,3 @@ export const checkExpiredPayments = async (): Promise<{
   }
 }
 
-// Exemplo de uso (pode ser chamado por um job agendado)
-if (require.main === module) {
-  checkExpiredPayments().then(result => {
-    if (result.success) {
-      console.log(`Verificação concluída. ${result.updatedCount} usuários atualizados.`);
-    } else {
-      console.error(`Erro na verificação: ${result.error}`);
-    }
-  });
-}

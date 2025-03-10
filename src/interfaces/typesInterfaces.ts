@@ -35,3 +35,10 @@ export interface ApiResponse {
     message: string;    
     
   }
+
+   
+export interface User {
+  id: string | number;
+  number: string | number;
+  data_last_payment: string | null;
+}

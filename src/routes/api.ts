@@ -6,7 +6,7 @@ import { webhook } from '../controllers/webhook';
 
 const router = Router();
 
-router.post("/receiveMessage",receiveMessage);
+router.post("/receiveMessage",validateWebhookToken,receiveMessage);
 router.get("/healthCheck",healthCheck);
 router.post("/webhook",webhook);
 

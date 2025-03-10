@@ -7,6 +7,7 @@ export const webhook = async (req: Request, res: Response) => {
     console.log(req.body.created_at);
     console.log(req.body.customer.phone_number);
     console.log(req.body);
+    console.dir(req.headers, { depth: null }); // Exibe os headers de forma legível
 
 
     // Verificar se o corpo da requisição contém os campos necessários
