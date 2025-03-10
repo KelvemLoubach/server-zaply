@@ -14,12 +14,12 @@ export const receiveMessage = async (req: Request, res: Response) => {
   try {
     // Validação do corpo da requisição
 
-    // Array de números permitidos
-    const allowedNumbers: string[] = [
-        "5528998844998@c.us",
-        "13135550002@c.us",
-        "5514998373060@c.us"
-    ];
+    // // Array de números permitidos
+    // const allowedNumbers: string[] = [
+    //     "5528998844998@c.us",
+    //     "13135550002@c.us",
+    //     "5514998373060@c.us"
+    // ];
 
     const from: string = req.body.data.from;
     const message = req.body.data.body;
@@ -29,13 +29,13 @@ export const receiveMessage = async (req: Request, res: Response) => {
     let audioTranscription: string | null = null;
     
     
-    // Verifica se o número está na lista de permitidos
-    if (from !== "5514998373060@c.us") {
-        return res.status(StatusCodes.FORBIDDEN).json({
-            success: false,
-            error: "Número não autorizado"
-        } as ApiResponse);
-    }
+    // // Verifica se o número está na lista de permitidos
+    // if (from !== "5514998373060@c.us") {
+    //     return res.status(StatusCodes.FORBIDDEN).json({
+    //         success: false,
+    //         error: "Número não autorizado"
+    //     } as ApiResponse);
+    // }
 
     if(req.body.data.mimetype === "audio/ogg; codecs=opus"){
       audioTranscription = await processAudio(req.body.data.url);
